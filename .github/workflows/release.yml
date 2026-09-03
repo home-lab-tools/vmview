@@ -29,8 +29,6 @@ jobs:
     runs-on: windows-latest
     env:
       VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-cache,readwrite
-      INSTALLED_KEY: vcpkg-installed-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}
-      BINARY_KEY: vcpkg-bin-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,21 +36,32 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # hashFiles() is not allowed in a job-level env, so the keys are computed here.
+      - name: Cache keys
+        id: keys
+        shell: pwsh
+        env:
+          MANIFEST: ${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}
+        run: |
+          "installed=vcpkg-installed-x64-windows-$env:MANIFEST" >> $env:GITHUB_OUTPUT
+          "binary=vcpkg-bin-x64-windows-$env:MANIFEST-${{ github.run_id }}" >> $env:GITHUB_OUTPUT
+          "prefix=vcpkg-bin-x64-windows-$env:MANIFEST-" >> $env:GITHUB_OUTPUT
+
       - name: Restore vcpkg_installed (exact manifest)
         id: installed
         uses: actions/cache/restore@v4
         with:
           path: native/vcpkg_installed
-          key: ${{ env.INSTALLED_KEY }}
+          key: ${{ steps.keys.outputs.installed }}
 
       - name: Restore vcpkg binary cache (newest)
         if: steps.installed.outputs.cache-hit != 'true'
         uses: actions/cache/restore@v4
         with:
           path: vcpkg-cache
-          key: ${{ env.BINARY_KEY }}
+          key: ${{ steps.keys.outputs.binary }}
           restore-keys: |
-            vcpkg-bin-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}-
+            ${{ steps.keys.outputs.prefix }}
             vcpkg-bin-x64-windows-
 
       - name: Build vmrdp.dll
@@ -65,14 +74,14 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: vcpkg-cache
-          key: ${{ env.BINARY_KEY }}
+          key: ${{ steps.keys.outputs.binary }}
 
       - name: Save vcpkg_installed
         if: steps.installed.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: native/vcpkg_installed
-          key: ${{ env.INSTALLED_KEY }}
+          key: ${{ steps.keys.outputs.installed }}
 
       - name: Version from tag
         id: ver
