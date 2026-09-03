@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>VmView</RootNamespace>
+    <AssemblyName>VmView</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\vmview.ico</ApplicationIcon>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- native\ holds the vcpkg tree, which carries stray .cs files (zlib's DotZLib); keep the SDK globs out. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);native\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <!--
+    `dotnet publish -c Release` (or publish.ps1) makes one self-contained VmView.exe: the runtime and every
+    managed assembly stay inside it; vmrdp.dll and the FreeRDP/OpenSSL runtime are native, so the host
+    extracts them once into %TEMP%\.net\VmView\<hash> and loads them from there. Regular builds stay
+    framework-dependent so bin\ is not flooded with the runtime.
+  -->
+  <PropertyGroup Condition="'$(_IsPublishing)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.20" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="System.Management" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Window, tray and exe icon; the *-live variant is the tray icon while a console is streaming. -->
+    <AvaloniaResource Include="Assets\vmview.ico" />
+    <AvaloniaResource Include="Assets\vmview-live.ico" />
+  </ItemGroup>
+
+  <!--
+    vmrdp.dll is the display-only console client (native\vmrdp.c over FreeRDP, built by native\build.ps1).
+    The build drops it and the FreeRDP/OpenSSL runtime beside it; ship the whole set with the app.
+    On publish the bundler recognises them as native PE files and folds them into the single exe.
+  -->
+  <ItemGroup>
+    <None Include="native\build\Release\*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+
+</Project>

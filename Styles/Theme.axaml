@@ -1,0 +1,229 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Type -->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource FgBrush}" />
+    </Style>
+    <Style Selector="TextBlock.dim">
+        <Setter Property="Foreground" Value="{StaticResource DimBrush}" />
+    </Style>
+    <Style Selector="TextBlock.small">
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="TextBlock.title">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="19" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.icon">
+        <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <!-- App bar and status line -->
+    <Style Selector="Border.bar">
+        <Setter Property="Background" Value="{StaticResource BarBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="16,11" />
+        <Setter Property="MinHeight" Value="60" />
+    </Style>
+    <Style Selector="Border.status">
+        <Setter Property="Background" Value="{StaticResource BarBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="16,7" />
+    </Style>
+
+    <!-- Narrow window (class set from SizeChanged): secondary labels go, controls keep their place. -->
+    <Style Selector="Window.narrow :is(Control).optional">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!-- Pills: state badges and the live chip -->
+    <Style Selector="Border.pill">
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Padding" Value="9,2" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.pill > TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Border.live">
+        <Setter Property="Background" Value="{StaticResource LiveSoftBrush}" />
+    </Style>
+    <Style Selector="Border.live > StackPanel > TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource LiveTextBrush}" />
+    </Style>
+
+    <!-- VM cards in a wrapping grid -->
+    <Style Selector="ListBox.cards">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="16,16,4,16" />
+    </Style>
+    <Style Selector="ListBox.cards ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,0,12,12" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Card"
+                        Background="{StaticResource CardBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        ClipToBounds="True"
+                        BoxShadow="0 1 2 0 #14000000">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.cards ListBoxItem:pointerover /template/ Border#Card">
+        <Setter Property="BorderBrush" Value="{StaticResource LineStrongBrush}" />
+    </Style>
+    <Style Selector="ListBox.cards ListBoxItem:selected /template/ Border#Card">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        <Setter Property="BoxShadow" Value="0 0 0 2 #332563EB" />
+    </Style>
+
+    <!-- Wall tiles: a translucent light wash behind a proportionally scaled picture, CCTV-style label -->
+    <Style Selector="Border.tile">
+        <Setter Property="Background" Value="#66FFFFFF" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Border.tile:pointerover">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Background" Value="#99FFFFFF" />
+    </Style>
+    <Style Selector="ComboBox.axis">
+        <Setter Property="MinWidth" Value="64" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{StaticResource BgBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+    </Style>
+    <Style Selector="Border.label">
+        <Setter Property="Background" Value="#B30F172A" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="9,4" />
+    </Style>
+    <Style Selector="Border.label TextBlock">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Round accent "open" button on a card -->
+    <Style Selector="Button.open">
+        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.open TextBlock">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.open:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource AccentHoverBrush}" />
+    </Style>
+
+    <!-- Segmented control (zoom) -->
+    <Style Selector="ListBox.segmented">
+        <Setter Property="Background" Value="{StaticResource BgBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="2" />
+            </ItemsPanelTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Seg" CornerRadius="6" Padding="12,4" Background="Transparent">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{StaticResource DimBrush}" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:pointerover /template/ Border#Seg">
+        <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:selected /template/ Border#Seg">
+        <Setter Property="Background" Value="{StaticResource BarBrush}" />
+        <Setter Property="BoxShadow" Value="0 1 2 0 #1F000000" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:selected TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource FgBrush}" />
+    </Style>
+
+    <!-- Quiet outlined buttons (fullscreen, reconnect) and the input gate toggle -->
+    <Style Selector="Button.quiet, ToggleButton.quiet">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Foreground" Value="{StaticResource FgBrush}" />
+    </Style>
+    <Style Selector="Button.quiet:pointerover /template/ ContentPresenter, ToggleButton.quiet:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.gate:checked /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.gate:checked TextBlock">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="ToggleButton.gate:checked:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ErrorHoverBrush}" />
+    </Style>
+
+    <!-- Back button in the console app bar -->
+    <Style Selector="Button.back">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Foreground" Value="{StaticResource FgBrush}" />
+    </Style>
+    <Style Selector="Button.back:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+    </Style>
+
+    <!-- Search box -->
+    <Style Selector="TextBox.search">
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{StaticResource BgBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="MinHeight" Value="34" />
+    </Style>
+</Styles>

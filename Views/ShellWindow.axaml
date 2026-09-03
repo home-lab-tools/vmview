@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:VmView.ViewModels"
+        xmlns:v="using:VmView.Views"
+        x:Class="VmView.Views.ShellWindow"
+        Title="{Binding Title}"
+        Icon="/Assets/vmview.ico"
+        Width="1180" Height="800" MinWidth="560" MinHeight="420"
+        Background="{StaticResource BgBrush}"
+        FontFamily="fonts:Inter"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="F11" Command="{Binding ToggleFullscreenCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding EscapeCommand}" />
+        <KeyBinding Gesture="Alt+Left" Command="{Binding BackCommand}" />
+        <KeyBinding Gesture="Enter" Command="{Binding OpenSelectedCommand}" />
+    </Window.KeyBindings>
+
+    <Window.DataTemplates>
+        <DataTemplate DataType="vm:ListPageViewModel">
+            <v:ListPage />
+        </DataTemplate>
+        <DataTemplate DataType="vm:ConsolePageViewModel">
+            <v:ConsolePage />
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <!-- The page stack: the list at the root, one console pushed on top; pages slide like on a phone. -->
+    <TransitioningContentControl Name="Host" Content="{Binding Page}" />
+</Window>

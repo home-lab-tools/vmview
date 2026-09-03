@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="using:VmView.Controls"
+             xmlns:vm="using:VmView.ViewModels"
+             x:Class="VmView.Views.ListPage"
+             Background="{StaticResource BgBrush}">
+
+    <UserControl.DataTemplates>
+        <!-- A VM: the picture keeps its aspect and is centred; the rest of the tile is a translucent light wash. -->
+        <DataTemplate DataType="vm:VmItem">
+            <Border Classes="tile" Margin="4" PointerPressed="OnTilePressed" Cursor="Hand">
+                <Panel>
+                    <c:ScreenView Source="{Binding Preview}" Zoom="Fit" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border Classes="label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Ellipse Width="7" Height="7" Fill="{Binding HeartbeatBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Classes="optional" Text="{Binding ResolutionText}" Opacity="0.7" />
+                        </StackPanel>
+                    </Border>
+                    <Border Classes="pill" Background="{Binding StateBrush}" IsVisible="{Binding ShowState}"
+                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10">
+                        <TextBlock Text="{Binding StateText}" />
+                    </Border>
+                </Panel>
+            </Border>
+        </DataTemplate>
+        <!-- A cell with no VM: nothing at all, it only holds its place in the grid -->
+        <DataTemplate DataType="vm:EmptyCell">
+            <Panel />
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <DockPanel>
+        <!-- Top bar: the wall's shape, one dropdown per axis. The wall itself never changes size with it. -->
+        <Border DockPanel.Dock="Top" Classes="bar">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <ComboBox Classes="axis" ItemsSource="{Binding AxisOptions}" SelectedItem="{Binding Columns}" ToolTip.Tip="Tiles across" />
+                    <TextBlock Classes="dim" Text="×" VerticalAlignment="Center" />
+                    <ComboBox Classes="axis" ItemsSource="{Binding AxisOptions}" SelectedItem="{Binding Rows}" ToolTip.Tip="Tiles down" />
+                </StackPanel>
+                <TextBlock Text="Virtual machines" Classes="h1" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <!-- The wall: a fixed columns × rows grid filling the page; a click on a tile opens its console. -->
+        <Panel Name="Wall" Margin="6">
+            <ItemsControl ItemsSource="{Binding Cells}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding Columns}" Rows="{Binding Rows}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10" IsVisible="{Binding Loading}">
+                <ProgressBar IsIndeterminate="True" Width="160" HorizontalAlignment="Center" />
+                <TextBlock Classes="dim" Text="Reading Hyper-V…" HorizontalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Classes="small" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="8"
+                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                       Text="{Binding $parent[Window].DataContext.Error}"
+                       IsVisible="{Binding $parent[Window].DataContext.Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </Panel>
+    </DockPanel>
+</UserControl>

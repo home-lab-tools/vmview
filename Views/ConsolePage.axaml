@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="using:VmView.Controls"
+             x:Class="VmView.Views.ConsolePage"
+             Background="{StaticResource StageBrush}">
+
+    <DockPanel>
+        <!-- App bar: back · name · chips | input gate · zoom · fullscreen. Hidden in fullscreen. -->
+        <Border DockPanel.Dock="Top" Classes="bar" IsVisible="{Binding !IsFullscreen}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0" Classes="back" Command="{Binding BackCommand}" ToolTip.Tip="Back to the list (Esc, Alt+←)">
+                    <TextBlock Classes="icon" Text="&#xE72B;" FontSize="16" VerticalAlignment="Center" />
+                </Button>
+
+                <Grid Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto,Auto,*" VerticalAlignment="Center" ClipToBounds="True" Margin="14,0,12,0">
+                    <TextBlock Grid.Column="0" Text="{Binding Vm.Name}" Classes="h1" VerticalAlignment="Center"
+                               MaxWidth="260" TextTrimming="CharacterEllipsis" Margin="0,0,10,0" />
+                    <Border Grid.Column="1" Classes="pill" Background="{Binding Vm.StateBrush}" IsVisible="{Binding !IsLive}" Margin="0,0,10,0">
+                        <TextBlock Text="{Binding Vm.StateText}" />
+                    </Border>
+                    <Border Grid.Column="2" Classes="pill live" IsVisible="{Binding IsLive}" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="7" Height="7" Fill="{StaticResource LiveBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="LIVE" />
+                            <TextBlock Classes="optional" Text="{Binding LiveText}" FontWeight="Normal" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="3" Classes="pill" Background="{StaticResource ErrorBrush}" IsVisible="{Binding InputEnabled}" Margin="0,0,10,0">
+                        <TextBlock Text="INPUT ON" />
+                    </Border>
+                    <TextBlock Grid.Column="4" Classes="dim small optional" Text="{Binding Vm.GuestText}" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                </Grid>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <ToggleButton Classes="quiet gate" IsChecked="{Binding InputEnabled}" IsEnabled="{Binding IsLive}"
+                                  ToolTip.Tip="Send keyboard and mouse to the VM">
+                        <TextBlock Classes="icon" Text="&#xE765;" FontSize="16" />
+                    </ToggleButton>
+                    <ListBox Classes="segmented" ItemsSource="{Binding ZoomOptions}" SelectedItem="{Binding ZoomOption}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Classes="quiet" Command="{Binding ToggleFullscreenCommand}" ToolTip.Tip="Fullscreen (F11, double-click)">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Classes="icon" Text="&#xE740;" VerticalAlignment="Center" />
+                            <TextBlock Classes="optional" Text="Fullscreen" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- The screen. Double-click on the stage toggles fullscreen while input is off. -->
+        <Panel Name="Stage" Background="{StaticResource StageBrush}" DoubleTapped="OnStageDoubleTapped">
+            <ScrollViewer HorizontalScrollBarVisibility="{Binding Zoom, Converter={x:Static c:ZoomToScrollBars.Instance}}"
+                          VerticalScrollBarVisibility="{Binding Zoom, Converter={x:Static c:ZoomToScrollBars.Instance}}"
+                          Padding="16" IsVisible="{Binding IsLive}">
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" BoxShadow="0 12 32 0 #26000000" Background="Black">
+                    <c:ScreenView Name="Screen" Source="{Binding Console.Frame}" Zoom="{Binding Zoom}"
+                                  Input="{Binding Console}" InputEnabled="{Binding InputEnabled}" />
+                </Border>
+            </ScrollViewer>
+
+            <!-- No picture: say why -->
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="{Binding ShowPlaceholder}">
+                <TextBlock Classes="icon dim" Text="&#xE7F4;" FontSize="40" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding Vm.Name}" Classes="h1" HorizontalAlignment="Center" />
+                <TextBlock Classes="dim" Text="{Binding PlaceholderText}" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="520" TextWrapping="Wrap" />
+                <ProgressBar IsIndeterminate="True" Width="180" IsVisible="{Binding IsConnecting}" HorizontalAlignment="Center" />
+                <Button Classes="quiet" Command="{Binding ReconnectCommand}" HorizontalAlignment="Center" IsVisible="{Binding CanReconnect}">
+                    <TextBlock Text="Reconnect" FontSize="13" />
+                </Button>
+            </StackPanel>
+
+            <!-- Fullscreen HUD -->
+            <Border VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,14,0,0" CornerRadius="999"
+                    Background="#CC0F172A" Padding="14,6" IsVisible="{Binding IsFullscreen}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="{Binding Vm.Name}" Foreground="White" FontWeight="SemiBold" FontSize="13" />
+                    <TextBlock Text="{Binding LiveText}" Foreground="#CBD5E1" FontSize="13" />
+                    <TextBlock Text="{Binding HudHint}" Foreground="#94A3B8" FontSize="13" />
+                </StackPanel>
+            </Border>
+        </Panel>
+    </DockPanel>
+</UserControl>
