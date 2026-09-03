@@ -26,7 +26,7 @@ identity), exactly like VMConnect: run the app as a Hyper-V administrator. A ses
 ## Using it
 
 - **Wall:** only running VMs (those with a screen) are shown, one tile each; a click on a tile (or Enter for
-  the first) opens its console. The two dropdowns at the top set the grid, 2–8 across × 2–8 down; the wall
+  the first) opens its console. The two dropdowns at the top set the grid, 1–8 across × 1–8 down; the wall
   itself keeps its size, tiles rescale to the cell, the picture keeps its aspect over a translucent light
   wash, and cells with no VM are simply empty. Previews are requested from the host at the tile's pixel width.
 - **Console:** the app bar has Back, the VM's name and a LIVE chip; on the right the input gate (keyboard

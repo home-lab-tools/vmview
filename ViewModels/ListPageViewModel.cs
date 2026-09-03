@@ -12,14 +12,14 @@ public sealed class EmptyCell;
 
 /// <summary>
 /// The root page — a wall of live previews, one tile per running VM, like a bank of security cameras.
-/// The wall is a fixed columns × rows grid (2 × 2 at least) that fills the page whatever the count; the
+/// The wall is a fixed columns × rows grid (1–8 each way, 2 × 2 to start) that fills the page whatever the count; the
 /// tiles scale to the cell and cells with no VM show as blanks. A view over the shell's
 /// <see cref="VmCatalog"/>: items are the catalog's own, this only filters them and lays them out.
 /// Previews are requested at the tile's own size so a big tile is not a blown-up thumbnail.
 /// </summary>
 public sealed partial class ListPageViewModel : ObservableObject, IDisposable
 {
-    public const int MinAxis = 2, MaxAxis = 8;
+    public const int MinAxis = 1, MaxAxis = 8, DefaultAxis = 2;
 
     readonly VmCatalog _catalog;
     readonly Action<VmItem> _open;
@@ -45,8 +45,8 @@ public sealed partial class ListPageViewModel : ObservableObject, IDisposable
     public string HostsText { get; }
     public IReadOnlyList<int> AxisOptions { get; } = Enumerable.Range(MinAxis, MaxAxis - MinAxis + 1).ToList();
 
-    [ObservableProperty] int _columns = MinAxis;
-    [ObservableProperty] int _rows = MinAxis;
+    [ObservableProperty] int _columns = DefaultAxis;
+    [ObservableProperty] int _rows = DefaultAxis;
 
     public bool Loading => !_catalog.Loaded;
     public bool Empty => _catalog.Loaded && Vms.Count == 0;
