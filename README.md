@@ -69,6 +69,17 @@ compressed). The managed side runs from inside the exe; vmrdp.dll and the FreeRD
 the host extracts them once to `%TEMP%\.net\VmView\<hash>\` and loads them from there. `vmview.json` and the
 autostart task are keyed on the exe's real location (`Environment.ProcessPath`), not that folder.
 
+## Release
+
+`.github/workflows/release.yml` builds the same exe on every push and PR (`windows-latest`, VS 2022, FreeRDP
+from vcpkg cached on the manifest hash) and uploads it as a workflow artifact. Pushing a `v*` tag publishes a
+GitHub Release with `VmView.exe` and its SHA-256, the tag stamped into the exe's file version:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 Icons: `tools\make-icon.py` (Pillow) draws `Assets\vmview.ico` and `Assets\vmview-live.ico` — window, tray
 and exe icon — and drops previews into `tools\icon-preview\`.
 
