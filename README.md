@@ -72,7 +72,7 @@ autostart task are keyed on the exe's real location (`Environment.ProcessPath`),
 ## Release
 
 `.github/workflows/release.yml` builds the same exe on every push and PR (`windows-latest`, VS 2022, FreeRDP
-from vcpkg cached on the manifest hash) and uploads it as a workflow artifact. Pushing a `v*` tag publishes a
+from vcpkg behind a per-port binary cache that survives failed runs, plus `vcpkg_installed` on the manifest hash) and uploads it as a workflow artifact. Pushing a `v*` tag publishes a
 GitHub Release with `VmView.exe` and its SHA-256, the tag stamped into the exe's file version:
 
 ```powershell

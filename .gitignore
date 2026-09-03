@@ -7,3 +7,4 @@ vmview.json
 *.user
 dist/
 .claude/settings.local.json
+vcpkg-cache/

@@ -3,8 +3,11 @@
 #
 #   git tag v0.1.0 && git push origin v0.1.0
 #
-# The FreeRDP build from vcpkg takes ~40 min cold; native\vcpkg_installed is cached on the manifest hash, so
-# a warm run only rebuilds the shim and the app.
+# The FreeRDP build from vcpkg takes ~40 min cold. Two caches keep it from happening twice:
+#   - vcpkg's binary cache (one zip per built port, `files` provider under vcpkg-cache\) — saved after every
+#     run, even a failed or cancelled one, and restored from the newest key available, so a half-finished cold
+#     build still keeps the ports it got through, and a manifest change only rebuilds what actually changed;
+#   - native\vcpkg_installed on the exact manifest hash — the fast path, build.ps1 skips `vcpkg install`.
 name: release
 
 on:
@@ -24,6 +27,10 @@ concurrency:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-cache,readwrite
+      INSTALLED_KEY: vcpkg-installed-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}
+      BINARY_KEY: vcpkg-bin-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,15 +38,41 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Cache FreeRDP (vcpkg_installed)
-        uses: actions/cache@v4
+      - name: Restore vcpkg_installed (exact manifest)
+        id: installed
+        uses: actions/cache/restore@v4
         with:
           path: native/vcpkg_installed
-          key: vcpkg-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}
+          key: ${{ env.INSTALLED_KEY }}
+
+      - name: Restore vcpkg binary cache (newest)
+        if: steps.installed.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: vcpkg-cache
+          key: ${{ env.BINARY_KEY }}
+          restore-keys: |
+            vcpkg-bin-x64-windows-${{ hashFiles('native/vcpkg.json', 'native/vcpkg-configuration.json') }}-
+            vcpkg-bin-x64-windows-
 
       - name: Build vmrdp.dll
         shell: pwsh
         run: ./native/build.ps1
+
+      # Saved whatever happened above: the port zips vcpkg managed to write are worth keeping.
+      - name: Save vcpkg binary cache
+        if: always() && steps.installed.outputs.cache-hit != 'true' && hashFiles('vcpkg-cache/**') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg-cache
+          key: ${{ env.BINARY_KEY }}
+
+      - name: Save vcpkg_installed
+        if: steps.installed.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: native/vcpkg_installed
+          key: ${{ env.INSTALLED_KEY }}
 
       - name: Version from tag
         id: ver
